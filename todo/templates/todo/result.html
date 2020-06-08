@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Rezultaty i działania</title>
+    {% load static %}
+    <link rel="stylesheet" type = "text/css" href="{% static 'todo/css/todo.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="
+    sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+  <body>
+      <nav class="navbar navbar-dark bg-dark justify-content-center">
+         {% for case in match_case %}
+         <a class="navbar-brand">{{case.case_text}}</a>
+      </nav>
+      <div class = 'container'>
+         <div class="input-group-text">
+            <form action="{% url 'addresult' case.case_text %}" method="POST">
+                  {% csrf_token %}
+                  {{ form.text }}
+                  <input type="submit" value = "Dodaj rezultat" class = 'btn btn-info'>
+            </form>
+            {% endfor %}
+         </div>
+         <div>
+            <table class = 'table table-dark table-hover'>
+               <thead>
+                  <tr>
+                     <th scope = 'col'>Oczekiwany rezultat</th>
+                     <th scope = 'col'>Status</th>
+                  </tr>
+               </thead>
+               <tbody>
+               {% if match_result %}
+               {% for res in match_result %}
+                  <tr>
+                  {% if res.res_comp == True %}
+                     <td><s>{{ res.res_text }}</s></td><td><s><a class="btn btn-sm btn-light" href="{% url 'completeresult' res.id %}">Ukończony</a></s></td>
+                  {% else %}
+                     <td><span>{{ res.res_text }}</span></td><td><span><a class="btn btn-sm btn-light" href="{% url 'completeresult' res.id %}">Nieukończony</a></span></td>
+                  {% endif %}
+                  </tr>
+               {% endfor %}
+               {% else %}
+                  <p>Brak rezultatów</p>
+               {% endif %}
+               </tbody>
+            </table>
+         </div>
+         <div> 
+            {% for case in match_case %}
+            <form action="{% url 'deletecompresults' case.case_text %}" method = "POST">
+               {% csrf_token %}
+               <input type="submit" value = "Usuń ukończony rezultat" class="btn btn-outline-dark float-right">
+            </form>
+            {% endfor %}
+         </div>
+         <br>
+         <br>
+         <div>
+            {% for case in match_case %}
+            <div class="input-group-text">
+               <form action="{% url 'addaction' case.case_text %}" method="POST" role = "form">
+                     {% csrf_token %}
+                     {{ form.text }}
+                     <input type="submit" value = "Dodaj działanie" class = 'btn btn-info'>
+               </form>
+            </div>
+            {% endfor %}
+         </div>
+         <div>
+            <table class = 'table table-dark table-hover'>
+               <thead>
+                  <tr>
+                     <th scope = 'col'>Działanie</th>
+                     <th scope = 'col'>Status</th>
+                  </tr>
+               </thead>
+               <tbody>
+               {% if match_action %}
+                  {% for act in match_action %}
+                  <tr>
+                     {% if act.act_comp == True %}
+                        <td><s>{{ act.act_text }}</s></td><td><s><a class="btn btn-sm btn-light" href="{% url 'completeaction' act.id %}">Ukończone</a></s></td>
+                     {% else %}
+                        <td><span>{{ act.act_text }}</span></td><td><span><a class="btn btn-sm btn-light" href="{% url 'completeaction' act.id %}">Nieukończone</a></span></td>
+                     {% endif %}
+                  </tr>
+                  {% endfor %}
+               {% else %}
+                  <p>Brak działań</p>
+               {% endif %}
+               </tbody>
+            </table>
+         </div>
+         
+         <div>
+            {% if match_case %}
+               {% for case in match_case %}
+                  <form action="{% url 'deletecompactions' case.case_text %}" method = "POST">
+                     {% csrf_token %}
+                     <input type="submit" value = "Usuń ukończone działanie" class="btn btn-outline-dark float-right">
+                  </form>
+               {% endfor %}
+            {% endif %}
+         </div>
+      </div>
+
+  </body>
+
+</html>

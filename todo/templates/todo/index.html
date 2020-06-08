@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Strona projektów</title>
+    {% load static %}
+    <link rel="stylesheet" type = "text/css" href="{% static 'todo/css/todo.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="
+    sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+
+  <body>
+      <nav class="navbar navbar-dark bg-dark justify-content-center">
+         <a class="navbar-brand">Aplikacja todo według książki Getting Things Done</a>
+      </nav>
+      <div class = 'container'>
+         <div id = 'quote'>
+            <h4>"Myśl jest pożyteczna, jeśli motywuje do działania, ale szkodliwa, jeśli zastępuje
+               działanie." - Bill Reader
+            </h4>
+            <br>
+         </div>
+         <div class = 'row'>
+            <div class = 'col-lg-6' style = "margin: auto;">
+               <h5>Opis metody David'a Allen'a:</h5>
+               <p>Przedstawiona na początku książki metoda  polega na wypisaniu spraw oraz projektów,
+                  które angażują znaczną część świadomej uwagi. Jednak w porównaniu do prostych list "todo"
+                  należy wykonać dwa dodatkowe kroki, tzn. do każdej sprawy wypisać oczekiwany rezultat oraz
+                  najbliższe działanie, które przybliży nas do rezultatu. W ten sposób zamiast myśleć o problemie
+                  ukierunkowujemy nasze myślenie na działanie. </p>
+            </div>
+            <div class = 'col-lg-6'>
+               <div class="input-group-text">
+                  <form action="{% url 'addcase' %}" method ="POST", role="form">
+                     {% csrf_token %}
+                     {{ form.text }}
+                     <input type="submit" value = "Dodaj sprawę" class = 'btn btn-info'>
+                  </form>
+               </div>
+               {% if case_list %}
+               <table class = 'table table-dark table-hover'>
+                  <thead>
+                     <tr>
+                        <th scope = 'col'>Projekt/Sprawa</th>
+                        <th scope = 'col'>Status</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                        {% for case in case_list %}
+                        <tr>
+                        {% if case.comp_case == True %}
+                           <td><s><a href = "{% url 'cases' case.case_text %}" target = "_blank">{{case.case_text}}</a></s></td>
+                           <td><s><a class="btn btn-sm btn-light" href="{% url 'completecase' case.id %}">Ukończony</a></s></td>
+                        {% else %}
+                           <td><span><a href = "{% url 'cases' case.case_text %}" target = "_blank">{{case.case_text}}</a></span></td>
+                           <td><span><a class="btn btn-sm btn-light" href="{% url 'completecase' case.id %}">Nieukończony</a></span></td>
+                        {% endif %}
+                        </tr>
+                        {% endfor %}
+                  {% endif %}
+                  </tbody>
+               </table>
+               <div>
+                  {% if case_list %}
+                     <form action="{% url 'deletecompcase' %}" method = "POST">
+                     {% csrf_token %}
+                     <input type="submit" value = "Usuń ukończone sprawy" class="btn btn-outline-dark float-right">
+                     </form>
+                  {% endif %}
+               </div>
+            </div>
+         </div>
+     </div>
+
+
+  </body>
+</html>
